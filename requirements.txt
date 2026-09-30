@@ -15,6 +15,7 @@ fastapi>=0.110
 uvicorn>=0.27
 streamlit>=1.32
 openai>=1.12
+requests>=2.31
 
 # Testing (Stage 7)
 pytest>=8.0
