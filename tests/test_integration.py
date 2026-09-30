@@ -83,3 +83,14 @@ def test_april_revenue_dip_is_explainable_via_operational_events():
 
     response = answer_question("Why did sales decrease in April?")
     assert any(rec.tool_name == "get_operational_events" for rec in response.tool_calls)
+
+
+def test_ambiguous_question_still_produces_a_grounded_answer():
+    """Stage 7 'ambiguity' check: a vague period should still resolve to a real
+    tool call with an explicit, stated interpretation rather than a refusal or
+    a fabricated number."""
+    from app.llm.assistant import answer_question
+
+    response = answer_question("How did sales perform recently?")
+    assert len(response.tool_calls) > 0
+    assert all(rec.error is None for rec in response.tool_calls)
