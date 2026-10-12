@@ -3,28 +3,37 @@
 A natural-language interface over structured business data, built as a portfolio
 case study in **AI Automation + Data Integration**.
 
-> **This is a fictional demo project.** "Northstar Commerce" is not a real
+> **This is a fictional demo project.** "Northstar Goods" is not a real
 > company. All data is synthetic, generated programmatically for this
 > demonstration — no real client, customer, or business data is used anywhere
 > in this repository.
 
+![Screenshot placeholder — add docs/screenshot.png after running the demo](docs/screenshot.png)
+
 ## Problem
 
-Non-technical operations managers have access to large amounts of business
-data but cannot easily query or interpret it without SQL or analyst support.
-They depend on analysts to answer routine questions like "what were total
-sales in March?" or "why did revenue drop in April?"
+Northstar Goods is a small online store whose owner suspects money is leaking:
+payments fail at checkout, orders get refunded, and a payment-gateway outage
+once wiped out days of sales. The data is in a database, but the owner has no
+analyst and no SQL. Questions like "how much did failed payments cost us in
+April?" or "which customers keep getting refunded?" go unanswered.
 
 ## Solution
 
-A chat interface where a user asks a question in plain English. An LLM
-decides which *controlled business capability* is needed, a validated Python
-function runs known, parameterized SQL against PostgreSQL, and the LLM
-explains the verified result back to the user in natural language.
+A chat interface where the owner asks in plain English. An LLM decides which
+*controlled business capability* is needed, a validated Python function runs
+known, parameterized SQL against PostgreSQL, and the LLM explains the verified
+result back in natural language.
 
 **The LLM never has direct database access and never invents numbers.**
 PostgreSQL is the only source of truth; the model can only act through six
 fixed, validated tool functions.
+
+**Free to run:** the LLM is any OpenAI-compatible endpoint (default: Groq free
+tier) with automatic fallback to a second provider (Hugging Face router or
+local Ollama) on rate limits or errors; the database can be local Docker
+Postgres or a free Supabase project; the app deploys to a free Hugging Face
+Space (see [`deploy/README.md`](deploy/README.md)).
 
 ## Architecture
 
@@ -32,10 +41,10 @@ fixed, validated tool functions.
 User
   → Streamlit UI
   → FastAPI (/ask)
-  → LLM (OpenAI, function/tool calling)
+  → LLM (Groq by default, OpenAI-compatible tool calling, auto-fallback)
   → controlled business tool (validated parameters)
   → known, parameterized SQL
-  → PostgreSQL (hosted on Supabase)
+  → PostgreSQL (local Docker or free Supabase)
   → structured result
   → LLM explanation
   → User
@@ -75,8 +84,8 @@ path anywhere in this project that turns free-text into SQL. See
 
 ## Technology stack
 
-Python · PostgreSQL (Supabase) · FastAPI · Streamlit · OpenAI API
-(function/tool calling) · Pydantic · pytest · Git/GitHub
+Python · PostgreSQL (Docker / Supabase) · FastAPI · Streamlit · OpenAI-compatible
+LLM APIs (Groq, Hugging Face, Ollama; tool calling) · Pydantic · pytest · Git/GitHub
 
 ## Repository structure
 
@@ -85,8 +94,10 @@ ai-business-data-assistant/
 ├── app/
 │   ├── api/          FastAPI app (/health, /ask)
 │   ├── database/     Lazy Postgres connection helper
-│   ├── llm/          Tool schemas, system prompt, OpenAI orchestration
+│   ├── llm/          Tool schemas, system prompt, provider client w/ fallback, orchestration
 │   └── tools/         Six controlled business-capability functions
+├── deploy/           Hugging Face Space Dockerfile, start script, deploy script + README
+├── docker-compose.yml  Local Postgres (loads sql/schema.sql)
 ├── data/             Generated CSVs (gitignored) + a README describing them
 ├── docs/
 │   └── ERD.md        Data model, business definitions, injected-anomaly story
@@ -111,18 +122,23 @@ ai-business-data-assistant/
    pip install -r requirements.txt
    ```
 
-2. **Create a Postgres database** (a free [Supabase](https://supabase.com)
-   project works well — Project Settings → Database → Connection string).
+2. **Create a Postgres database** — pick one:
+   - **Local (Docker):** `docker compose up -d`, then
+     `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/northstar`
+     (the schema is applied automatically on first start).
+   - **Free Supabase:** create a project at [supabase.com](https://supabase.com),
+     copy Project Settings → Database → Connection string (URI), and use it as
+     `DATABASE_URL`; then run `psql "$DATABASE_URL" -f sql/schema.sql`.
 
 3. **Configure environment variables:**
    ```bash
    cp .env.example .env
-   # then edit .env with your DATABASE_URL and OPENAI_API_KEY
+   # then edit .env with your DATABASE_URL and a free LLM_API_KEY
+   # (Groq: https://console.groq.com/keys). Optionally set LLM_FALLBACK_*.
    ```
 
 4. **Apply the schema and load synthetic data:**
    ```bash
-   psql "$DATABASE_URL" -f sql/schema.sql
    python3 scripts/generate_data.py      # writes CSVs to data/
    python3 scripts/load_data.py          # loads them via DATABASE_URL
    ```
@@ -133,8 +149,33 @@ ai-business-data-assistant/
    streamlit run streamlit_app.py
    ```
 
+## Sample Q&A
+
+Illustrative of the style of answers; exact figures depend on the generated
+dataset. Every number in a real answer comes from a tool result, shown in the
+UI's "tool calls" panel.
+
+> **Q:** How much revenue did failed payments cost us in April?
+> **A:** 312 payments failed in April, representing about $41,800 in
+> attempted orders — roughly 3x a normal month. A critical payment-gateway
+> outage was logged for April 10–14, which explains most of the spike.
+
+> **Q:** Which customers had the most failed transactions?
+> **A:** The top five customers account for a disproportionate share of
+> failures; the leader had 9 failed attempts. *(Names and counts come from
+> `get_transaction_failures`.)*
+
+> **Q:** What's the weather tomorrow?
+> **A:** That's outside what this system's data covers. I can only answer
+> questions about Northstar Goods' sales, customers, products, payments and
+> operational events.
+
+*(Sample figures above are illustrative placeholders; replace with real output
+from your run alongside `docs/screenshot.png`.)*
+
 ## Example questions
 
+- How much revenue did failed payments cost us in April?
 - What were our total sales in March?
 - Which products generated the most revenue?
 - Why did sales decrease in the second half of April?
@@ -149,7 +190,7 @@ payment-gateway outage overlapping a warehouse migration in one April — see
 `docs/ERD.md`) so that "why did revenue drop?" has a real, discoverable,
 data-backed answer rather than requiring the model to speculate.
 
-`tests/test_integration.py` (runs once `DATABASE_URL` and `OPENAI_API_KEY`
+`tests/test_integration.py` (runs once `DATABASE_URL` and `LLM_API_KEY`
 are set) checks:
 
 - **Numeric accuracy** — the tool's answer matches a hand-written SQL query.
@@ -169,7 +210,7 @@ run with no external dependencies (mocked DB, no API key needed) and pass in CI.
 
 - No raw/arbitrary SQL execution path exists anywhere in the codebase.
 - All SQL uses bound parameters; no string-formatted queries.
-- Secrets (`DATABASE_URL`, `OPENAI_API_KEY`) are read from environment
+- Secrets (`DATABASE_URL`, `LLM_API_KEY`) are read from environment
   variables via `.env`, which is gitignored; `.env.example` documents the
   required shape with no real values.
 - The `/ask` endpoint returns a clean `503` with a helpful message rather
@@ -182,6 +223,8 @@ run with no external dependencies (mocked DB, no API key needed) and pass in CI.
 - It can only answer questions the six business tools support, over the
   `customers` / `products` / `orders` / `order_items` / `transactions` /
   `operational_events` tables.
+- The schema models failed and refunded transactions; chargebacks are not a
+  separate status, so "chargeback" questions are answered via refunds/failures.
 - The dataset is synthetic; absolute figures are illustrative, not real
   business results.
 
