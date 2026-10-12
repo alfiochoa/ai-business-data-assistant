@@ -8,7 +8,16 @@ case study in **AI Automation + Data Integration**.
 > demonstration — no real client, customer, or business data is used anywhere
 > in this repository.
 
+[![Try it live](https://img.shields.io/badge/Try%20it-live%20demo-ff4b4b?logo=streamlit&logoColor=white)](LIVE_URL_HERE)
+[![CI](https://github.com/alfiochoa/ai-business-data-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/alfiochoa/ai-business-data-assistant/actions/workflows/ci.yml)
+
 ![Streamlit UI answering a revenue-drop question from live data](docs/screenshot.png)
+
+## Try it
+
+- **Live demo:** _coming soon_ (replace `LIVE_URL_HERE` in the badge above once deployed to Streamlit Community Cloud).
+- **Run locally in 3 commands:** see [Setup](#setup).
+- **60-second walkthrough:** [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) lists the exact questions to ask.
 
 ## Problem
 
