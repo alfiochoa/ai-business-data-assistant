@@ -9,5 +9,5 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-dev.txt
       - run: pytest -q   # integration tests skip without live credentials

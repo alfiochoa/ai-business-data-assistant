@@ -17,5 +17,3 @@ streamlit>=1.32
 openai>=1.12  # OpenAI-compatible SDK (Groq, HF, Ollama)
 requests>=2.31
 
-# Testing (Stage 7)
-pytest>=8.0
