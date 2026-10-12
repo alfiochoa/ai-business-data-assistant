@@ -9,3 +9,6 @@ venv/
 .DS_Store
 data/*.csv
 data/*.db
+
+# local Streamlit secrets
+.streamlit/secrets.toml
