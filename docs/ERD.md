@@ -1,6 +1,7 @@
-# Data Model — Northstar Commerce
+# Data Model — Northstar Goods
 
-Fictional e-commerce/retail dataset. See `sql/schema.sql` for the full DDL and
+Fictional dataset for a small online store losing money to payment failures,
+refunds and chargebacks (all data synthetic). See `sql/schema.sql` for the full DDL and
 `PROJECT_SPEC.md` for the business scenario this schema serves.
 
 ## Entity-Relationship Diagram

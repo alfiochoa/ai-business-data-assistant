@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible synthetic data generator for the Northstar Commerce dataset.
+"""Reproducible synthetic data generator for the Northstar Goods dataset.
 
 Usage:
     python3 scripts/generate_data.py

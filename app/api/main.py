@@ -11,8 +11,8 @@ from app.llm.assistant import answer_question
 from app.llm.models import AssistantResponse
 
 app = FastAPI(
-    title="Northstar Commerce — Business Data Assistant API",
-    description="Fictional portfolio demo. Natural-language questions over synthetic business data.",
+    title="Northstar Goods — Payment Loss Assistant API",
+    description="Fictional portfolio demo: a small online store losing money to payment failures, refunds and chargebacks. Synthetic data only.",
     version="0.1.0",
 )
 
@@ -43,6 +43,6 @@ def ask(payload: AskRequest):
         return answer_question(question)
     except RuntimeError as exc:
         # Raised by app.llm.client / app.database.connection when
-        # OPENAI_API_KEY / DATABASE_URL are missing — a configuration
+        # LLM_API_KEY / DATABASE_URL are missing — a configuration
         # problem, not a client error, so 503 rather than 500/400.
         return JSONResponse(status_code=503, content={"detail": str(exc)})

@@ -13,25 +13,26 @@ import streamlit as st
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
 
-st.set_page_config(page_title="Northstar Commerce Business Data Assistant", page_icon="📊")
+st.set_page_config(page_title="Northstar Goods — Payment Loss Assistant", page_icon="📊")
 
-st.title("📊 Northstar Commerce — Business Data Assistant")
+st.title("💳 Northstar Goods — Where is my money going?")
 st.caption(
-    "Fictional portfolio demo. Northstar Commerce is not a real company; all "
+    "Fictional portfolio demo of a small online store losing money to payment "
+    "failures, refunds and chargebacks. Northstar Goods is not a real company; all "
     "data is synthetic. Answers come only from controlled database tools — "
     "the AI never invents business numbers."
 )
 
 with st.expander("Example questions"):
     st.markdown(
-        "- What were our total sales in March?\n"
+        "- How much revenue did failed payments cost us in April?\n"
         "- Which products generated the most revenue?\n"
         "- Why did sales decrease in the second half of April?\n"
         "- Which customers had the highest number of failed transactions?\n"
         "- Compare revenue between January and February."
     )
 
-question = st.text_input("Ask a question about Northstar Commerce's business data:")
+question = st.text_input("Ask a question about Northstar Goods' payments and sales:")
 ask_clicked = st.button("Ask", type="primary")
 
 if ask_clicked and question.strip():

@@ -1,7 +1,7 @@
 # AI Business Data Assistant
 
 ## Fictional Company
-Northstar Commerce
+Northstar Goods
 
 ## Industry
 E-commerce / Retail
@@ -11,7 +11,7 @@ Operations Analytics
 
 ## Disclaimer
 
-This is a fictional portfolio demonstration project. Northstar Commerce is not a
+This is a fictional portfolio demonstration project. Northstar Goods is not a
 real company, and no real client data or business results are represented here.
 All data is synthetic and generated programmatically.
 

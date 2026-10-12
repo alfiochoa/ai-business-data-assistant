@@ -1,4 +1,4 @@
--- AI Business Data Assistant — Northstar Commerce schema
+-- AI Business Data Assistant — Northstar Goods (fictional small online store) schema
 -- Target: PostgreSQL 14+ (developed against Supabase-hosted Postgres)
 --
 -- Business definitions encoded here (see also PROJECT_SPEC.md / docs/ERD.md):

@@ -13,7 +13,7 @@ TOOL_SCHEMAS: list[dict] = [
             "name": "get_sales_summary",
             "description": (
                 "Get total recognized revenue, order count, and average order value "
-                "for Northstar Commerce over a date range. Use this for any question "
+                "for Northstar Goods over a date range. Use this for any question "
                 "about total sales/revenue in a period."
             ),
             "parameters": {
