@@ -82,3 +82,27 @@ class OperationalEventsResult(BaseModel):
     end_date: dt.date
     severity_filter: str | None
     events: list[OperationalEvent]
+
+
+class CustomerFailureItem(BaseModel):
+    customer_id: int
+    full_name: str
+    email: str
+    failed_count: int
+    total_transactions: int
+    failed_amount: float
+
+
+class CustomerFailures(BaseModel):
+    start_date: dt.date
+    end_date: dt.date
+    items: list[CustomerFailureItem]
+
+
+class RefundSummary(BaseModel):
+    start_date: dt.date
+    end_date: dt.date
+    total_orders: int
+    refunded_orders: int
+    refund_rate: float
+    refunded_value: float

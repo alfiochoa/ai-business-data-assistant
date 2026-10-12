@@ -12,8 +12,9 @@ from typing import Callable
 from app.tools.customers import get_customer_performance
 from app.tools.operations import get_operational_events
 from app.tools.products import get_product_performance
+from app.tools.refunds import get_refund_summary
 from app.tools.sales import compare_sales_periods, get_sales_summary
-from app.tools.transactions import get_transaction_failures
+from app.tools.transactions import get_customer_failed_transactions, get_transaction_failures
 
 TOOL_REGISTRY: dict[str, Callable] = {
     "get_sales_summary": get_sales_summary,
@@ -21,5 +22,7 @@ TOOL_REGISTRY: dict[str, Callable] = {
     "get_product_performance": get_product_performance,
     "get_customer_performance": get_customer_performance,
     "get_transaction_failures": get_transaction_failures,
+    "get_customer_failed_transactions": get_customer_failed_transactions,
+    "get_refund_summary": get_refund_summary,
     "get_operational_events": get_operational_events,
 }

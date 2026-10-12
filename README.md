@@ -68,7 +68,7 @@ definitions (what counts as revenue, a failed transaction, etc.).
 
 ## Why this design (LLM → tool → SQL, not LLM → SQL)
 
-The model is never given raw SQL access. Instead it picks from six typed
+The model is never given raw SQL access. Instead it picks from eight typed
 Python functions (`app/tools/`), each of which:
 
 1. validates its parameters (rejects malformed dates, out-of-range values,
@@ -93,6 +93,8 @@ path anywhere in this project that turns free-text into SQL. See
 | `get_product_performance` | "Which products generated the most revenue?" |
 | `get_customer_performance` | "Which customers ordered the most?" |
 | `get_transaction_failures` | "Which period had the most failed transactions?" |
+| `get_customer_failed_transactions` | "Which customers had the most failed payments?" |
+| `get_refund_summary` | "How many orders were refunded in 2024, and what share is that?" |
 | `get_operational_events` | "Why did sales decrease in April?" |
 
 ## Technology stack
@@ -234,7 +236,7 @@ are set) checks:
 - **Ambiguity handling** — a vague period ("recently") still resolves to a
   concrete, stated interpretation instead of a refusal or a guess.
 - **Injection resistance** — attempts to request raw SQL or override
-  instructions cannot reach anything beyond the six fixed tools.
+  instructions cannot reach anything beyond the eight fixed tools.
 
 `tests/test_tools.py`, `tests/test_llm_tool_schemas.py`, and `tests/test_api.py`
 run with no external dependencies (mocked DB, no API key needed) and pass in CI.
@@ -254,7 +256,7 @@ run with no external dependencies (mocked DB, no API key needed) and pass in CI.
 
 - This is a reporting/explanation assistant, not a forecasting engine — it
   cannot predict future sales.
-- It can only answer questions the six business tools support, over the
+- It can only answer questions the eight business tools support, over the
   `customers` / `products` / `orders` / `order_items` / `transactions` /
   `operational_events` tables.
 - The schema models failed and refunded transactions; chargebacks are not a

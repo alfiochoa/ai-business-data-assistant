@@ -105,6 +105,43 @@ TOOL_SCHEMAS: list[dict] = [
     {
         "type": "function",
         "function": {
+            "name": "get_customer_failed_transactions",
+            "description": (
+                "Rank customers by number of failed/declined payment transactions in a date range "
+                "(with failed amount). Use this for 'which customers had the most failed payments'."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "start_date": {"type": "string", "format": "date"},
+                    "end_date": {"type": "string", "format": "date"},
+                    "top_n": {"type": "integer", "minimum": 1, "maximum": 100, "description": "How many top customers to return, default 10."},
+                },
+                "required": ["start_date", "end_date"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_refund_summary",
+            "description": (
+                "Get the number of refunded orders, the refund rate (share of all orders) and the "
+                "refunded value for a date range. Use this for refund / money-returned questions."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "start_date": {"type": "string", "format": "date"},
+                    "end_date": {"type": "string", "format": "date"},
+                },
+                "required": ["start_date", "end_date"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "get_operational_events",
             "description": (
                 "Get logged operational incidents (e.g. payment gateway outages, warehouse "

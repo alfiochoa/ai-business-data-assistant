@@ -199,3 +199,43 @@ def test_get_operational_events_passes_severity_through():
         operations.get_operational_events("2024-04-01", "2024-04-30", severity="critical")
     _, params = cursor.execute.call_args[0]
     assert params["severity"] == "critical"
+
+
+# --- get_customer_failed_transactions / get_refund_summary -------------------
+
+
+def test_customer_failed_transactions_rejects_bad_top_n():
+    with patch("app.tools.transactions.get_cursor") as mock_get_cursor:
+        with pytest.raises(ToolValidationError):
+            transactions.get_customer_failed_transactions("2024-01-01", "2024-02-01", top_n=0)
+        mock_get_cursor.assert_not_called()
+
+
+def test_customer_failed_transactions_uses_bound_params():
+    row = {"customer_id": 1, "full_name": "A B", "email": "a@x.com",
+           "failed_count": 3, "total_transactions": 5, "failed_amount": 120.5}
+    cursor, fake = _fake_cursor(fetchall_result=[row])
+    with patch("app.tools.transactions.get_cursor", fake):
+        result = transactions.get_customer_failed_transactions("2024-01-01", "2024-02-01", top_n=5)
+    params = cursor.execute.call_args[0][1]
+    assert params["top_n"] == 5 and params["failed_statuses"] == ["failed", "declined"]
+    assert result.items[0].failed_count == 3
+
+
+def test_refund_summary_computes_rate():
+    from app.tools import refunds
+
+    cursor, fake = _fake_cursor(fetchone_result={"total_orders": 200, "refunded_orders": 10, "refunded_value": 1234.567})
+    with patch("app.tools.refunds.get_cursor", fake):
+        result = refunds.get_refund_summary("2024-01-01", "2024-12-31")
+    assert result.refund_rate == 0.05 and result.refunded_value == 1234.57
+    assert "start_date" in cursor.execute.call_args[0][1]
+
+
+def test_refund_summary_rejects_inverted_range():
+    from app.tools import refunds
+
+    with patch("app.tools.refunds.get_cursor") as mock_get_cursor:
+        with pytest.raises(ToolValidationError):
+            refunds.get_refund_summary("2024-05-01", "2024-01-01")
+        mock_get_cursor.assert_not_called()
