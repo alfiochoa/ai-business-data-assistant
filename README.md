@@ -149,6 +149,21 @@ ai-business-data-assistant/
    streamlit run streamlit_app.py
    ```
 
+## Free hosting: Streamlit Community Cloud
+
+`streamlit_app.py` runs the assistant in-process when `API_BASE_URL` is unset,
+so the whole demo is one free Streamlit app. At share.streamlit.io choose this
+repo, main file `streamlit_app.py`, and put these in *Secrets*:
+
+```toml
+DATABASE_URL = "postgresql://..."   # Supabase (use the Session Pooler string if the host is IPv6-only)
+LLM_API_KEY = "gsk_..."             # free Groq key
+LLM_FALLBACK_MODEL = "qwen/qwen3.8-27b"
+```
+
+(Hugging Face Docker Spaces need a PRO plan, so `deploy/` is optional.)
+Live URL: _add after deploying_.
+
 ## Sample Q&A
 
 Illustrative of the style of answers; exact figures depend on the generated

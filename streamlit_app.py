@@ -1,7 +1,9 @@
-"""Streamlit chat UI for the Northstar Commerce Business Data Assistant.
+"""Streamlit chat UI for the Northstar Goods Payment Loss Assistant.
 
-Talks to the FastAPI backend over HTTP (not by importing app.llm directly) so
-the demo reflects the real UI -> API -> LLM -> tools -> Postgres architecture.
+If API_BASE_URL is set, talks to the FastAPI backend over HTTP (the full
+UI -> API -> LLM -> tools -> Postgres architecture). Otherwise (e.g. Streamlit
+Community Cloud) it calls the same assistant in-process, with secrets read
+from st.secrets or the environment.
 """
 
 from __future__ import annotations
@@ -11,7 +13,28 @@ import os
 import requests
 import streamlit as st
 
-API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
+try:  # Streamlit Cloud secrets -> env, so app.llm / app.database pick them up
+    for _k in st.secrets:
+        if isinstance(st.secrets[_k], str):
+            os.environ.setdefault(_k, st.secrets[_k])
+except Exception:
+    pass
+
+API_BASE_URL = os.environ.get("API_BASE_URL")
+
+
+def ask_backend(question: str) -> tuple[int, dict]:
+    """Return (status_code, json) from the HTTP API, or from the in-process assistant."""
+    if API_BASE_URL:
+        resp = requests.post(f"{API_BASE_URL}/ask", json={"question": question}, timeout=60)
+        return resp.status_code, resp.json()
+    from app.llm.assistant import answer_question
+
+    try:
+        return 200, answer_question(question).model_dump(mode="json")
+    except RuntimeError as exc:
+        return 503, {"detail": str(exc)}
+
 
 st.set_page_config(page_title="Northstar Goods — Payment Loss Assistant", page_icon="📊")
 
@@ -38,19 +61,16 @@ ask_clicked = st.button("Ask", type="primary")
 if ask_clicked and question.strip():
     with st.spinner("Thinking..."):
         try:
-            response = requests.post(
-                f"{API_BASE_URL}/ask", json={"question": question}, timeout=60
-            )
+            status, data = ask_backend(question)
         except requests.RequestException as exc:
             st.error(f"Could not reach the API at {API_BASE_URL}: {exc}")
             st.stop()
 
-    if response.status_code == 503:
-        st.warning(response.json().get("detail", "The assistant is not configured yet."))
-    elif response.status_code >= 400:
-        st.error(f"Request failed ({response.status_code}): {response.text}")
+    if status == 503:
+        st.warning(data.get("detail", "The assistant is not configured yet."))
+    elif status >= 400:
+        st.error(f"Request failed ({status}): {data}")
     else:
-        data = response.json()
         st.markdown("### Answer")
         st.write(data["answer"])
 
