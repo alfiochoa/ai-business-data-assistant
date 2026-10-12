@@ -19,6 +19,10 @@ case study in **AI Automation + Data Integration**.
 - **Run locally in 3 commands:** see [Setup](#setup).
 - **60-second walkthrough:** [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) lists the exact questions to ask.
 
+**Live deployment** (Streamlit Community Cloud → Groq → Supabase), screenshot taken from the running public app:
+
+![Live demo answering 'Which products generated the most revenue?'](docs/live-demo.png)
+
 ## Problem
 
 Northstar Goods is a small online store whose owner suspects money is leaking:
