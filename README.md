@@ -166,27 +166,35 @@ Live URL: _add after deploying_.
 
 ## Sample Q&A
 
-Illustrative of the style of answers; exact figures depend on the generated
-dataset. Every number in a real answer comes from a tool result, shown in the
-UI's "tool calls" panel.
+Real transcripts from live runs (Groq `openai/gpt-oss-120b` + Supabase, synthetic
+data). Every figure comes from the listed tool call.
 
-> **Q:** How much revenue did failed payments cost us in April?
-> **A:** 312 payments failed in April, representing about $41,800 in
-> attempted orders — roughly 3x a normal month. A critical payment-gateway
-> outage was logged for April 10–14, which explains most of the spike.
+**1. Which products generated the most revenue in 2024?**
+*Tool:* `get_product_performance(2024-01-01 → 2024-12-31, top_n=10)`
 
-> **Q:** Which customers had the most failed transactions?
-> **A:** The top five customers account for a disproportionate share of
-> failures; the leader had 9 failed attempts. *(Names and counts come from
-> `get_transaction_failures`.)*
+> Top products by 2024 revenue: #1 SKU-ELE-00266 "Over Electronics Their" —
+> **$202,678** (175 units); #2 SKU-ELE-00429 — **$192,166.58** (166 units);
+> #3 SKU-ELE-00433 — **$190,981.80** (180 units); #4 SKU-ELE-00310 —
+> **$168,925**; #5 SKU-ELE-00075 — **$156,016.08**. All top items are in
+> Electronics.
 
-> **Q:** What's the weather tomorrow?
-> **A:** That's outside what this system's data covers. I can only answer
-> questions about Northstar Goods' sales, customers, products, payments and
-> operational events.
+**2. How many payments failed in April 2024 versus March 2024, and what likely caused the difference?**
+*Tools:* `get_transaction_failures` (both months), `get_operational_events`
 
-*(Sample figures above are illustrative placeholders; replace with real output
-from your run alongside `docs/screenshot.png`.)*
+> **March 2024:** 238 failures (10.6 %). **April 2024:** 269 failures (15.8 %).
+> Operational logs show a critical payment-gateway outage on April 10, 2024
+> ("causing widespread transaction failures"), which aligns with the jump in
+> the failure rate.
+
+**3. What's the weather tomorrow in Madrid?** *(no tools called)*
+
+> I'm sorry, but I don't have any weather information — my data only covers
+> Northstar Goods' sales, payments, customers, products, and operational events.
+
+*Known weakness:* on a related run ("Why did sales drop in April 2024?") the
+tool results were right (revenue $450,473 vs $913,054 in March) but the model
+mis-stated the relative drop as "‑102 %" alongside the correct "about 50 %".
+Numbers come from tools; arithmetic the model does itself is not guaranteed.
 
 ## Example questions
 
