@@ -72,7 +72,7 @@ if ask_clicked and question.strip():
         st.error(f"Request failed ({status}): {data}")
     else:
         st.markdown("### Answer")
-        st.write(data["answer"])
+        st.markdown(data["answer"].replace("$", "\\$"))
 
         tool_calls = data.get("tool_calls", [])
         if tool_calls:

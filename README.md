@@ -8,7 +8,7 @@ case study in **AI Automation + Data Integration**.
 > demonstration — no real client, customer, or business data is used anywhere
 > in this repository.
 
-![Screenshot placeholder — add docs/screenshot.png after running the demo](docs/screenshot.png)
+![Streamlit UI answering a revenue-drop question from live data](docs/screenshot.png)
 
 ## Problem
 
@@ -191,10 +191,7 @@ data). Every figure comes from the listed tool call.
 > I'm sorry, but I don't have any weather information — my data only covers
 > Northstar Goods' sales, payments, customers, products, and operational events.
 
-*Known weakness:* on a related run ("Why did sales drop in April 2024?") the
-tool results were right (revenue $450,473 vs $913,054 in March) but the model
-mis-stated the relative drop as "‑102 %" alongside the correct "about 50 %".
-Numbers come from tools; arithmetic the model does itself is not guaranteed.
+*Note:* an earlier version of this assistant mis-stated a relative drop as "-102 %" when the model swapped the comparison periods. The comparison tool now returns precomputed percentage changes and a plain-language summary, and the system prompt forbids recomputing percentages (re-run result: -50.66 % revenue, -48.17 % orders).
 
 ## Example questions
 

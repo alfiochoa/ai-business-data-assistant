@@ -66,10 +66,24 @@ def compare_sales_periods(
     )
     order_count_delta = period_b.order_count - period_a.order_count
 
+    order_count_delta_pct = (
+        round(order_count_delta / period_a.order_count * 100, 2) if period_a.order_count else None
+    )
+    if revenue_delta_pct is None:
+        summary = "Period A has no revenue, so no percentage change can be computed."
+    else:
+        direction = "higher" if revenue_delta >= 0 else "lower"
+        summary = (
+            f"Period B revenue is {abs(revenue_delta_pct)}% {direction} than period A "
+            f"(baseline = period A, so period A should be the EARLIER period)."
+        )
+
     return PeriodComparison(
         period_a=period_a,
         period_b=period_b,
         revenue_delta=revenue_delta,
         revenue_delta_pct=revenue_delta_pct,
         order_count_delta=order_count_delta,
+        order_count_delta_pct=order_count_delta_pct,
+        summary=summary,
     )

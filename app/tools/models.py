@@ -25,6 +25,8 @@ class PeriodComparison(BaseModel):
     period_b: SalesSummary
     revenue_delta: float
     revenue_delta_pct: float | None
+    order_count_delta_pct: float | None = None
+    summary: str = ""
     order_count_delta: int
 
 
