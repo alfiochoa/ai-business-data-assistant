@@ -1,10 +1,10 @@
 """Real end-to-end tests against a live Supabase/Postgres database and the
-real OpenAI API. Automatically skipped until both DATABASE_URL and
-OPENAI_API_KEY are set (Stage 4 / Stage 6 completion), so this file is safe
+real LLM provider. Automatically skipped until both DATABASE_URL and
+LLM_API_KEY are set (Stage 4 / Stage 6 completion), so this file is safe
 to keep in the suite from day one.
 
 Run for real with:
-    DATABASE_URL=... OPENAI_API_KEY=... pytest tests/test_integration.py -v
+    DATABASE_URL=... LLM_API_KEY=... pytest tests/test_integration.py -v
 """
 
 from __future__ import annotations
@@ -14,8 +14,8 @@ import os
 import pytest
 
 pytestmark = pytest.mark.skipif(
-    not (os.environ.get("DATABASE_URL") and os.environ.get("OPENAI_API_KEY")),
-    reason="Requires a live DATABASE_URL and OPENAI_API_KEY (see .env.example).",
+    not (os.environ.get("DATABASE_URL") and os.environ.get("LLM_API_KEY")),
+    reason="Requires a live DATABASE_URL and LLM_API_KEY (see .env.example).",
 )
 
 

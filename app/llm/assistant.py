@@ -14,7 +14,7 @@ import json
 
 from pydantic import BaseModel
 
-from app.llm.client import DEFAULT_MODEL, get_openai_client
+from app.llm.client import create_chat_completion
 from app.llm.models import AssistantResponse, ToolCallRecord
 from app.llm.schemas import TOOL_SCHEMAS
 from app.llm.system_prompt import SYSTEM_PROMPT
@@ -44,8 +44,6 @@ def _execute_tool(tool_name: str, arguments: dict) -> ToolCallRecord:
 
 
 def answer_question(user_question: str) -> AssistantResponse:
-    client = get_openai_client()
-
     messages: list[dict] = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_question},
@@ -53,8 +51,7 @@ def answer_question(user_question: str) -> AssistantResponse:
     tool_call_records: list[ToolCallRecord] = []
 
     for _ in range(MAX_TOOL_ROUNDS):
-        response = client.chat.completions.create(
-            model=DEFAULT_MODEL,
+        response = create_chat_completion(
             messages=messages,
             tools=TOOL_SCHEMAS,
             tool_choice="auto",
@@ -100,7 +97,7 @@ def answer_question(user_question: str) -> AssistantResponse:
 
     # Exceeded MAX_TOOL_ROUNDS without a final answer — ask once more without tools
     # so the model is forced to summarize what it has rather than loop forever.
-    response = client.chat.completions.create(model=DEFAULT_MODEL, messages=messages)
+    response = create_chat_completion(messages=messages)
     return AssistantResponse(
         question=user_question,
         answer=response.choices[0].message.content or "",

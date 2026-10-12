@@ -14,7 +14,7 @@ pydantic>=2.6
 fastapi>=0.110
 uvicorn>=0.27
 streamlit>=1.32
-openai>=1.12
+openai>=1.12  # OpenAI-compatible SDK (Groq, HF, Ollama)
 requests>=2.31
 
 # Testing (Stage 7)

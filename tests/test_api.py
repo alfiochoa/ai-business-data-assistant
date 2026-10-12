@@ -19,10 +19,13 @@ def test_health_returns_ok():
 
 
 def test_ask_returns_503_when_openai_key_missing(monkeypatch):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    monkeypatch.delenv("LLM_FALLBACK_BASE_URL", raising=False)
+    monkeypatch.setattr("app.llm.client._providers", None)
+    monkeypatch.setattr("app.llm.client._env_loaded", True)
     response = client.post("/ask", json={"question": "What were sales in March?"})
     assert response.status_code == 503
-    assert "OPENAI_API_KEY" in response.json()["detail"]
+    assert "LLM_API_KEY" in response.json()["detail"]
 
 
 def test_ask_rejects_empty_question():
