@@ -239,6 +239,7 @@ run with no external dependencies (mocked DB, no API key needed) and pass in CI.
 
 - No raw/arbitrary SQL execution path exists anywhere in the codebase.
 - All SQL uses bound parameters; no string-formatted queries.
+- See [`SECURITY.md`](SECURITY.md) and `sql/readonly_role.sql` (read-only DB role for the app).
 - Secrets (`DATABASE_URL`, `LLM_API_KEY`) are read from environment
   variables via `.env`, which is gitignored; `.env.example` documents the
   required shape with no real values.
