@@ -46,30 +46,43 @@ st.caption(
     "the AI never invents business numbers."
 )
 
-with st.expander("Example questions"):
-    st.markdown(
-        "- How much revenue did failed payments cost us in April?\n"
-        "- Which products generated the most revenue?\n"
-        "- Why did sales decrease in the second half of April?\n"
-        "- Which customers had the highest number of failed transactions?\n"
-        "- Compare revenue between January and February."
-    )
+EXAMPLES = [
+    "How much revenue did failed payments cost us in April 2024?",
+    "Which products generated the most revenue?",
+    "Why did sales decrease in the second half of April?",
+    "Which customers had the highest number of failed transactions?",
+    "Compare revenue between January and February 2024.",
+]
 
-question = st.text_input("Ask a question about Northstar Goods' payments and sales:")
-ask_clicked = st.button("Ask", type="primary")
+st.markdown("**Try an example:**")
+for i, example in enumerate(EXAMPLES):
+    if st.button(example, key=f"ex{i}"):
+        st.session_state["pending_question"] = example
 
-if ask_clicked and question.strip():
+with st.form("ask_form"):
+    typed = st.text_input("Ask a question about Northstar Goods' payments and sales:")
+    ask_clicked = st.form_submit_button("Ask", type="primary")
+
+question = st.session_state.pop("pending_question", None) or (typed if ask_clicked else "")
+
+if question.strip():
+    st.caption(f"Question: {question}")
     with st.spinner("Thinking..."):
         try:
             status, data = ask_backend(question)
         except requests.RequestException as exc:
             st.error(f"Could not reach the API at {API_BASE_URL}: {exc}")
             st.stop()
+        except Exception as exc:  # e.g. database unreachable
+            st.error(f"Something went wrong: {type(exc).__name__}: {exc}")
+            st.stop()
 
     if status == 503:
         st.warning(data.get("detail", "The assistant is not configured yet."))
     elif status >= 400:
         st.error(f"Request failed ({status}): {data}")
+    elif not (data.get("answer") or "").strip():
+        st.error("The assistant returned an empty answer. Please try again or rephrase.")
     else:
         st.markdown("### Answer")
         st.markdown(data["answer"].replace("$", "\\$"))

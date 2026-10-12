@@ -97,12 +97,15 @@ def get_providers() -> list[Provider]:
     return _providers
 
 
-def create_chat_completion(**kwargs):
+def create_chat_completion(*, prefer_fallback: bool = False, **kwargs):
     """Call chat.completions.create on the first working provider.
 
-    `model` is chosen per provider; do not pass it.
+    `model` is chosen per provider; do not pass it. `prefer_fallback` skips the
+    primary (used when the primary returned an empty completion).
     """
     providers = get_providers()
+    if prefer_fallback and len(providers) > 1:
+        providers = providers[1:]
     last_exc: Exception | None = None
     for provider in providers:
         try:

@@ -70,6 +70,40 @@ def _compact_for_llm(result: dict) -> dict:
     }
 
 
+_NUDGE = "Using the tool results above, write the final answer."
+
+
+def _text(response) -> str:
+    return (response.choices[0].message.content or "").strip()
+
+
+def _deterministic_summary(records: list[ToolCallRecord]) -> str:
+    """Last-resort answer built only from tool results, so the UI is never blank."""
+    if not records:
+        return "The assistant could not produce an answer. Please try rephrasing the question."
+    lines = ["The language model returned no text, so here are the raw verified results:"]
+    for r in records:
+        if r.error:
+            lines.append(f"- `{r.tool_name}` failed: {r.error}")
+            continue
+        compact = _compact_for_llm(r.result or {})
+        lines.append(f"- `{r.tool_name}` {json.dumps(r.arguments)}: {json.dumps(compact, default=str)[:1500]}")
+    return "\n".join(lines)
+
+
+def _final_answer(messages: list[dict], records: list[ToolCallRecord]) -> str:
+    """Get non-empty final text: nudge retry -> fallback model -> deterministic summary."""
+    nudged = messages + [{"role": "user", "content": _NUDGE}]
+    for kwargs in ({}, {"prefer_fallback": True}):
+        try:
+            text = _text(create_chat_completion(messages=nudged, **kwargs))
+        except RuntimeError:
+            continue
+        if text:
+            return text
+    return _deterministic_summary(records)
+
+
 def answer_question(user_question: str) -> AssistantResponse:
     messages: list[dict] = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -86,11 +120,10 @@ def answer_question(user_question: str) -> AssistantResponse:
         message = response.choices[0].message
 
         if not message.tool_calls:
-            return AssistantResponse(
-                question=user_question,
-                answer=message.content or "",
-                tool_calls=tool_call_records,
-            )
+            answer = (message.content or "").strip()
+            if not answer:
+                answer = _final_answer(messages, tool_call_records)
+            return AssistantResponse(question=user_question, answer=answer, tool_calls=tool_call_records)
 
         messages.append(
             {
@@ -122,11 +155,9 @@ def answer_question(user_question: str) -> AssistantResponse:
                 }
             )
 
-    # Exceeded MAX_TOOL_ROUNDS without a final answer — ask once more without tools
-    # so the model is forced to summarize what it has rather than loop forever.
-    response = create_chat_completion(messages=messages)
+    # Exceeded MAX_TOOL_ROUNDS without a final answer: force a summary without tools.
     return AssistantResponse(
         question=user_question,
-        answer=response.choices[0].message.content or "",
+        answer=_final_answer(messages, tool_call_records),
         tool_calls=tool_call_records,
     )
