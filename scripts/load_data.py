@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import psycopg2
+from dotenv import load_dotenv
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -46,6 +47,7 @@ def load_table(cur, table: str) -> int:
 
 
 def main() -> None:
+    load_dotenv()  # so DATABASE_URL from .env works as the README describes
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         print("ERROR: set DATABASE_URL to your Supabase/Postgres connection string.", file=sys.stderr)

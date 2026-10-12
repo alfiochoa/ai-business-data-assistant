@@ -134,7 +134,8 @@ ai-business-data-assistant/
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
-   pip install -r requirements.txt
+   pip install -r requirements.txt        # runtime
+   pip install -r requirements-dev.txt    # + pytest, to run the tests
    ```
 
 2. **Create a Postgres database** — pick one:
@@ -143,7 +144,8 @@ ai-business-data-assistant/
      (the schema is applied automatically on first start).
    - **Free Supabase:** create a project at [supabase.com](https://supabase.com),
      copy Project Settings → Database → Connection string (URI), and use it as
-     `DATABASE_URL`; then run `psql "$DATABASE_URL" -f sql/schema.sql`.
+     `DATABASE_URL`; then apply the schema yourself (the Docker option does it automatically):
+     `psql "$DATABASE_URL" -f sql/schema.sql` (or paste `sql/schema.sql` into the Supabase SQL editor).
 
 3. **Configure environment variables:**
    ```bash
@@ -152,17 +154,21 @@ ai-business-data-assistant/
    # (Groq: https://console.groq.com/keys). Optionally set LLM_FALLBACK_*.
    ```
 
-4. **Apply the schema and load synthetic data:**
+4. **Generate and load the synthetic data** (reads `DATABASE_URL` from `.env`):
    ```bash
    python3 scripts/generate_data.py      # writes CSVs to data/
    python3 scripts/load_data.py          # loads them via DATABASE_URL
    ```
 
-5. **Run the backend and UI** (two terminals):
+5. **Run the app:**
    ```bash
-   uvicorn app.api.main:app --reload --port 8000
-   streamlit run streamlit_app.py
+   streamlit run streamlit_app.py        # UI; calls the assistant in-process
    ```
+   Optional, to exercise the full UI → API architecture: run
+   `uvicorn app.api.main:app --port 8000` and start Streamlit with
+   `API_BASE_URL=http://localhost:8000`.
+
+6. **Run the tests:** `pytest -q` (integration tests skip without live credentials).
 
 ## Free hosting: Streamlit Community Cloud
 
