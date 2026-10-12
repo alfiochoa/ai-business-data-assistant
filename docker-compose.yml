@@ -1,0 +1,22 @@
+# Local Postgres for the demo. Loads sql/schema.sql on first start.
+#   docker compose up -d
+#   export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/northstar
+#   python3 scripts/generate_data.py && python3 scripts/load_data.py
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: northstar
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d northstar"]
+      interval: 5s
+      retries: 10
+volumes:
+  pgdata:
