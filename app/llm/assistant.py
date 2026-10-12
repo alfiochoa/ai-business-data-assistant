@@ -43,6 +43,33 @@ def _execute_tool(tool_name: str, arguments: dict) -> ToolCallRecord:
     return ToolCallRecord(tool_name=tool_name, arguments=arguments, result=result_dict)
 
 
+_MAX_EVENTS_FOR_LLM = 15
+_SEVERITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+
+
+def _compact_for_llm(result: dict) -> dict:
+    """Shrink long event lists so a single tool result can't blow the model's token limit.
+
+    Counts are exact; only the most severe events are listed individually.
+    """
+    events = result.get("events")
+    if not isinstance(events, list) or len(events) <= _MAX_EVENTS_FOR_LLM:
+        return result
+    by_type: dict[str, int] = {}
+    by_severity: dict[str, int] = {}
+    for e in events:
+        by_type[e["event_type"]] = by_type.get(e["event_type"], 0) + 1
+        by_severity[e["severity"]] = by_severity.get(e["severity"], 0) + 1
+    top = sorted(events, key=lambda e: (_SEVERITY_RANK.get(e["severity"], 9), e["event_date"]))
+    return {
+        **{k: v for k, v in result.items() if k != "events"},
+        "total_events": len(events),
+        "counts_by_type": by_type,
+        "counts_by_severity": by_severity,
+        "most_severe_events_sample": top[:_MAX_EVENTS_FOR_LLM],
+    }
+
+
 def answer_question(user_question: str) -> AssistantResponse:
     messages: list[dict] = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -83,7 +110,7 @@ def answer_question(user_question: str) -> AssistantResponse:
             tool_call_records.append(record)
 
             tool_content = (
-                json.dumps(record.result)
+                json.dumps(_compact_for_llm(record.result))
                 if record.error is None
                 else json.dumps({"error": record.error})
             )

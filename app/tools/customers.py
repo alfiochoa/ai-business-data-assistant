@@ -22,7 +22,7 @@ _CUSTOMER_PERFORMANCE_SQL = """
     FROM order_items oi
     JOIN orders o ON o.order_id = oi.order_id
     JOIN customers c ON c.customer_id = o.customer_id
-    WHERE o.status = ANY(%(statuses)s)
+    WHERE o.status::text = ANY(%(statuses)s)
       AND o.order_date::date BETWEEN %(start_date)s AND %(end_date)s
     GROUP BY c.customer_id, c.first_name, c.last_name, c.email, c.segment
     ORDER BY revenue DESC

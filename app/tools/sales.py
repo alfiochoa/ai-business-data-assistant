@@ -17,7 +17,7 @@ _SALES_SUMMARY_SQL = """
         COUNT(DISTINCT o.order_id)::int AS order_count
     FROM orders o
     LEFT JOIN order_items oi ON oi.order_id = o.order_id
-    WHERE o.status = ANY(%(statuses)s)
+    WHERE o.status::text = ANY(%(statuses)s)
       AND o.order_date::date BETWEEN %(start_date)s AND %(end_date)s
 """
 

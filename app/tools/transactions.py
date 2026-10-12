@@ -14,7 +14,7 @@ _FAILED_STATUSES = ("failed", "declined")
 _TRANSACTION_FAILURES_SQL = """
     SELECT
         COUNT(*)::int AS total_transactions,
-        COUNT(*) FILTER (WHERE status = ANY(%(failed_statuses)s))::int AS failed_count
+        COUNT(*) FILTER (WHERE status::text = ANY(%(failed_statuses)s))::int AS failed_count
     FROM transactions
     WHERE transaction_date::date BETWEEN %(start_date)s AND %(end_date)s
 """

@@ -22,7 +22,7 @@ _PRODUCT_PERFORMANCE_SQL = """
     FROM order_items oi
     JOIN orders o ON o.order_id = oi.order_id
     JOIN products p ON p.product_id = oi.product_id
-    WHERE o.status = ANY(%(statuses)s)
+    WHERE o.status::text = ANY(%(statuses)s)
       AND o.order_date::date BETWEEN %(start_date)s AND %(end_date)s
     GROUP BY p.product_id, p.sku, p.name, p.category
     ORDER BY revenue DESC

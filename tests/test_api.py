@@ -20,7 +20,7 @@ def test_health_returns_ok():
 
 def test_ask_returns_503_when_openai_key_missing(monkeypatch):
     monkeypatch.delenv("LLM_API_KEY", raising=False)
-    monkeypatch.delenv("LLM_FALLBACK_BASE_URL", raising=False)
+    monkeypatch.delenv("LLM_FALLBACK_MODEL", raising=False)
     monkeypatch.setattr("app.llm.client._providers", None)
     monkeypatch.setattr("app.llm.client._env_loaded", True)
     response = client.post("/ask", json={"question": "What were sales in March?"})

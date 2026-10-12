@@ -34,6 +34,7 @@ _FALLBACK_ERRORS = (
     openai.InternalServerError,
     openai.AuthenticationError,
     openai.NotFoundError,
+    openai.APIStatusError,  # incl. 413 request-too-large, 400 bad tool call
     openai.BadRequestError,  # e.g. malformed tool call from a flaky model
 )
 
@@ -67,11 +68,13 @@ def _build_providers() -> list[Provider]:
             )
         )
 
-    fb_url = os.environ.get("LLM_FALLBACK_BASE_URL")
+    # Fallback defaults to the primary endpoint/key with a different model
+    # (rate limits are per model on Groq), so LLM_FALLBACK_MODEL alone is enough.
     fb_model = os.environ.get("LLM_FALLBACK_MODEL")
-    if fb_url and fb_model:
+    fb_url = os.environ.get("LLM_FALLBACK_BASE_URL") or os.environ.get("LLM_BASE_URL", DEFAULT_BASE_URL)
+    if fb_model:
         # Local Ollama ignores the key but the SDK requires a non-empty one.
-        fb_key = os.environ.get("LLM_FALLBACK_API_KEY") or "not-needed"
+        fb_key = os.environ.get("LLM_FALLBACK_API_KEY") or api_key or "not-needed"
         providers.append(
             Provider("fallback", OpenAI(base_url=fb_url, api_key=fb_key, max_retries=1, timeout=60), fb_model)
         )
