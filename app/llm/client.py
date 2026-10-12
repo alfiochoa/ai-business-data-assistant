@@ -25,7 +25,7 @@ from openai import OpenAI
 logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
-DEFAULT_MODEL = "llama-3.3-70b-versatile"  # Groq free tier, supports tool calling
+DEFAULT_MODEL = "openai/gpt-oss-120b"  # Groq free tier, supports tool calling
 
 _FALLBACK_ERRORS = (
     openai.RateLimitError,
