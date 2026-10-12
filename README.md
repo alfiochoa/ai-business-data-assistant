@@ -201,7 +201,20 @@ data). Every figure comes from the listed tool call.
 > ("causing widespread transaction failures"), which aligns with the jump in
 > the failure rate.
 
-**3. What's the weather tomorrow in Madrid?** *(no tools called)*
+**3. Which customers had the highest number of failed transactions in 2024?** *(live app)*
+*Tool:* `get_customer_failed_transactions(2024-01-01 → 2024-12-31)`
+
+> Top customers by failed transactions in 2024 (ten tied at 5 failures each),
+> e.g. #1 Brian Decker — 5 failed of 23 transactions, **$6,515.67** failed;
+> #2 Stephanie Bailey — 5 of 22, **$4,863.71**; #3 Jessica Costa — 5 of 15,
+> **$4,000.77**. The ten together: $38,805.57 in failed transaction value.
+
+**4. How many orders were refunded in 2024, and what share of all orders is that?** *(live app)*
+*Tool:* `get_refund_summary(2024-01-01 → 2024-12-31)`
+
+> In 2024, **857** orders were refunded, which is **3.45 %** of all orders.
+
+**5. What's the weather tomorrow in Madrid?** *(no tools called)*
 
 > I'm sorry, but I don't have any weather information — my data only covers
 > Northstar Goods' sales, payments, customers, products, and operational events.
