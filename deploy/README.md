@@ -1,5 +1,7 @@
 # Deploying to a free Hugging Face Space
 
+NOTE: as of Oct 2026 Docker Spaces on free cpu-basic require HF PRO (the API returns 402); only Static Spaces are free. Use this on a PRO account, or deploy elsewhere.
+
 One Docker Space runs both the Streamlit UI (public, port 7860) and the
 FastAPI backend (internal, port 8000). Free CPU basic tier is enough.
 
@@ -18,8 +20,8 @@ Optional overrides: `LLM_BASE_URL`, `LLM_MODEL`.
 ## Deploy
 
 ```bash
-export HF_TOKEN=hf_... HF_SPACE=<user>/<space-name>
-./deploy/deploy_hf_space.sh
+export HF_TOKEN=hf_... DATABASE_URL=... LLM_API_KEY=...   # or: set -a; . ./.env
+python deploy/deploy_hf_space.py   # also sets Space secrets from your env
 ```
 
 Then add the secrets above in the Space settings and restart it. Load the
