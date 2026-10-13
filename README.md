@@ -8,14 +8,14 @@ case study in **AI Automation + Data Integration**.
 > demonstration — no real client, customer, or business data is used anywhere
 > in this repository.
 
-[![Try it live](https://img.shields.io/badge/Try%20it-live%20demo-ff4b4b?logo=streamlit&logoColor=white)](https://ai-business-data-assistant-7yx4lzewmva2kn2u5h3wgr.streamlit.app/)
+[![Try it live](https://img.shields.io/badge/Try%20it-live%20demo-ff4b4b?logo=streamlit&logoColor=white)](https://alfredo-business-assistant.streamlit.app/)
 [![CI](https://github.com/alfiochoa/ai-business-data-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/alfiochoa/ai-business-data-assistant/actions/workflows/ci.yml)
 
 ![Streamlit UI answering a revenue-drop question from live data](docs/screenshot.png)
 
 ## Try it
 
-- **Live demo:** https://ai-business-data-assistant-7yx4lzewmva2kn2u5h3wgr.streamlit.app/
+- **Live demo:** https://alfredo-business-assistant.streamlit.app/
 - **Run locally in 3 commands:** see [Setup](#setup).
 - **60-second walkthrough:** [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) lists the exact questions to ask.
 
@@ -183,7 +183,7 @@ LLM_FALLBACK_MODEL = "qwen/qwen3.8-27b"
 ```
 
 (Hugging Face Docker Spaces need a PRO plan, so `deploy/` is optional.)
-Live URL: https://ai-business-data-assistant-7yx4lzewmva2kn2u5h3wgr.streamlit.app/
+Live URL: https://alfredo-business-assistant.streamlit.app/
 
 ## Sample Q&A
 

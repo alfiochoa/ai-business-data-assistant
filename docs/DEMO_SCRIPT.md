@@ -1,6 +1,6 @@
 # 60-second demo video script
 
-Setup: UI open at https://ai-business-data-assistant-7yx4lzewmva2kn2u5h3wgr.streamlit.app/ (or `streamlit run streamlit_app.py`), "Example
+Setup: UI open at https://alfredo-business-assistant.streamlit.app/ (or `streamlit run streamlit_app.py`), "Example
 questions" collapsed, browser zoom ~110%. All data is synthetic (Northstar Goods).
 
 | Time | Say | Do / ask (type exactly) |
