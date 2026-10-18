@@ -39,7 +39,7 @@ known, parameterized SQL against PostgreSQL, and the LLM explains the verified
 result back in natural language.
 
 **The LLM never has direct database access and never invents numbers.**
-PostgreSQL is the only source of truth; the model can only act through six
+PostgreSQL is the only source of truth; the model can only act through eight
 fixed, validated tool functions.
 
 **Free to run:** the LLM is any OpenAI-compatible endpoint (default: Groq free
@@ -110,7 +110,7 @@ ai-business-data-assistant/
 │   ├── api/          FastAPI app (/health, /ask)
 │   ├── database/     Lazy Postgres connection helper
 │   ├── llm/          Tool schemas, system prompt, provider client w/ fallback, orchestration
-│   └── tools/         Six controlled business-capability functions
+│   └── tools/         Eight controlled business-capability functions
 ├── deploy/           Hugging Face Space Dockerfile, start script, deploy script + README
 ├── docker-compose.yml  Local Postgres (loads sql/schema.sql)
 ├── data/             Generated CSVs (gitignored) + a README describing them

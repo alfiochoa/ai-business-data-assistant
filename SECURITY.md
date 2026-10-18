@@ -2,7 +2,7 @@
 
 This is a demo over **synthetic data**, but it is built as if it were real.
 
-- **No SQL from the model.** The LLM can only call six validated tool functions;
+- **No SQL from the model.** The LLM can only call eight validated tool functions;
   all SQL is parameterized (see README, "Why this design").
 - **Use a read-only database role for the app.** The app only runs `SELECT`s, so
   it should not connect as `postgres`/an owner. `sql/readonly_role.sql` creates
